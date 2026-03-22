@@ -1,4 +1,4 @@
-# LearnForge — Mini LMS Frontend
+# Lets's Learn — Mini LMS Frontend
 
 A professional React frontend for the Mini LMS Spring Boot backend.
 
