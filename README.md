@@ -125,7 +125,7 @@ For production, set `VITE_API_URL` in a `.env` file and update `src/api/index.js
 ## Environment Variables (optional)
 Create a `.env` file in the root:
 ```
-VITE_APP_TITLE=LearnForge
+VITE_APP_TITLE=LetsLearn
 ```
 
 ---
