@@ -18,6 +18,7 @@ export function StudentAnalyticsPage() {
   const [badges, setBadges] = useState([])
   const [streak, setStreak] = useState(null)
   const [learningPath, setLearningPath] = useState(null)
+  const [recommendedCourses, setRecommendedCourses] = useState([])
   const [goal, setGoal] = useState('')
   const [loadingPath, setLoadingPath] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -46,7 +47,25 @@ export function StudentAnalyticsPage() {
     setLoadingPath(true)
     try {
       const res = await analyticsAPI.getLearningPath(goal)
-      setLearningPath(res?.data)
+      const path = res?.data
+      setLearningPath(path)
+
+      const ids = path?.recommendedCourseIds || []
+      if (ids.length === 0) {
+        setRecommendedCourses([])
+      } else {
+        const detailSettled = await Promise.allSettled(ids.map(id => courseAPI.getById(id)))
+        const courses = detailSettled
+          .map((r, idx) => {
+            if (r.status !== 'fulfilled') return null
+            return {
+              id: ids[idx],
+              title: r.value?.data?.title || `Course #${ids[idx]}`,
+            }
+          })
+          .filter(Boolean)
+        setRecommendedCourses(courses)
+      }
     } catch (e) { toast.error('Could not fetch learning path') }
     finally { setLoadingPath(false) }
   }
@@ -197,11 +216,11 @@ export function StudentAnalyticsPage() {
               <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>{learningPath.description}</p>
               {learningPath.recommendedCourseIds?.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
-                  {learningPath.recommendedCourseIds.map((id, i) => (
-                    <Link key={id} to={`/courses/${id}`}>
+                  {(recommendedCourses.length > 0 ? recommendedCourses : learningPath.recommendedCourseIds.map(id => ({ id, title: `Course #${id}` }))).map((course, i) => (
+                    <Link key={course.id} to={`/courses/${course.id}`}>
                       <span className="px-3 py-1.5 rounded-lg text-sm font-semibold"
                         style={{ background: 'var(--brand)', color: 'white', fontFamily: 'Sora, sans-serif' }}>
-                        Step {i + 1}: Course #{id}
+                        Step {i + 1}: {course.title}
                       </span>
                     </Link>
                   ))}

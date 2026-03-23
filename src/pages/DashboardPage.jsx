@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import {
   BookOpen, TrendingUp, Award, Flame, Play, Plus, Users,
-  DollarSign, BarChart3, Star, CheckCircle, Clock, ArrowRight,
+  IndianRupee, BarChart3, Star, CheckCircle, Clock, ArrowRight,
   Zap, Trophy, Target, Layers
 } from 'lucide-react'
 import { useAuthStore } from '../store'
@@ -31,6 +31,8 @@ function StatCard({ icon: Icon, label, value, sub, color = '#6366f1' }) {
 }
 
 function EnrollmentCard({ enrollment }) {
+  const courseLabel = enrollment.courseTitle || enrollment.courseName || enrollment.title || (enrollment.courseId ? `Course #${enrollment.courseId}` : 'Course')
+
   return (
     <Link to={`/learn/${enrollment.courseId}`} className="block">
       <div className="card-hover p-4 rounded-2xl"
@@ -42,7 +44,7 @@ function EnrollmentCard({ enrollment }) {
           </div>
           <div className="flex-1 min-w-0">
             <p style={{ fontFamily: 'Sora, sans-serif', fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }} className="truncate">
-              Course #{enrollment.courseId}
+              {courseLabel}
             </p>
             <div className="flex items-center gap-2 mt-1">
               <Badge variant={enrollment.status === 'COMPLETED' ? 'success' : 'brand'} className="text-xs">
@@ -335,7 +337,7 @@ function AdminDashboard({ user }) {
         {[
           { to: '/admin/users', icon: Users, label: 'Manage Users', color: '#6366f1' },
           { to: '/courses', icon: BookOpen, label: 'All Courses', color: '#10b981' },
-          { to: '/admin/payments', icon: DollarSign, label: 'Payments', color: '#f97316' },
+          { to: '/admin/payments', icon: IndianRupee, label: 'Payments', color: '#f97316' },
           { to: '/admin/analytics', icon: BarChart3, label: 'Analytics', color: '#8b5cf6' },
         ].map(({ to, icon: Icon, label, color }) => (
           <Link key={to} to={to}>
@@ -367,7 +369,7 @@ function AdminDashboard({ user }) {
                 style={{ borderBottom: i < transactions.length - 1 ? '1px solid var(--border)' : 'none' }}>
                 <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
                   style={{ background: t.status === 'SUCCESS' ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.1)', color: t.status === 'SUCCESS' ? '#10b981' : '#ef4444' }}>
-                  <DollarSign size={16} />
+                  <IndianRupee size={16} />
                 </div>
                 <div className="flex-1">
                   <p style={{ fontWeight: 600, fontSize: '0.875rem', color: 'var(--text-primary)' }}>

@@ -298,9 +298,11 @@ export default function CourseDetailPage() {
                 {reviews.map(r => (
                   <div key={r.id} className="p-5 rounded-2xl" style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
                     <div className="flex items-center gap-3 mb-3">
-                      <Avatar name={`Student ${r.studentId}`} size="sm" />
+                      <Avatar name={r.studentName || 'Student'} size="sm" />
                       <div>
-                        <p style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.875rem' }}>Student #{r.studentId}</p>
+                        <p style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.875rem' }}>
+                          {r.studentName || 'Student'}
+                        </p>
                         <div className="flex gap-0.5 mt-0.5">
                           {[1,2,3,4,5].map(s => <span key={s} style={{ color: s <= r.rating ? '#f59e0b' : 'var(--border)', fontSize: '0.85rem' }}>★</span>)}
                         </div>

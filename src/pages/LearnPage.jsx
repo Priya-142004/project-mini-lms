@@ -27,6 +27,10 @@ export default function LearnPage() {
   const [submittingQuiz, setSubmittingQuiz] = useState(false)
   const lastVideoTimeRef = useRef(0)
   const watchedSecondsRef = useRef(0)
+  const activeLesson = lessons[activeIdx]
+  const progressList = progress?.lessonProgressList || []
+
+  const isCompleted = (lessonId) => progressList.find(p => p.lessonId === lessonId)?.isCompleted
 
   useEffect(() => {
     const load = async () => {
@@ -49,7 +53,8 @@ export default function LearnPage() {
   }, [courseId])
 
   useEffect(() => {
-    const targetLessonId = Number(searchParams.get('lessonId'))
+    const lessonIdParam = searchParams.get('lessonId')
+    const targetLessonId = lessonIdParam ? Number(lessonIdParam) : null
     if (!targetLessonId || lessons.length === 0) return
     const idx = lessons.findIndex(l => l.id === targetLessonId)
     if (idx >= 0) setActiveIdx(idx)
@@ -82,10 +87,6 @@ export default function LearnPage() {
     }
     loadQuiz()
   }, [activeLesson?.id, activeLesson?.contentType])
-
-  const activeLesson = lessons[activeIdx]
-  const progressList = progress?.lessonProgressList || []
-  const isCompleted = (lessonId) => progressList.find(p => p.lessonId === lessonId)?.isCompleted
 
   const logLearningEvent = async (eventType, value = null) => {
     if (!activeLesson?.id) return
