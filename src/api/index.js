@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: '/api/v1',
+  baseURL: import.meta.env.VITE_API_URL || '/api/v1',
   timeout: 30000,
 })
 
@@ -33,6 +33,9 @@ export const authAPI = {
   login: (data) => api.post('/auth/login', data),
   verifyOtp: (data) => api.post('/auth/verify-otp', data),
   resendOtp: (data) => api.post('/auth/resend-otp', data),
+  forgotPassword: (data) => api.post('/auth/forgot-password', data),
+  verifyForgotPasswordOtp: (data) => api.post('/auth/forgot-password/verify-otp', data),
+  resetForgotPassword: (data) => api.post('/auth/forgot-password/reset', data),
 }
 
 // ── User ──

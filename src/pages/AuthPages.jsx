@@ -101,7 +101,7 @@ export function LoginPage() {
           icon={<Lock size={16} />}
           value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} required />
         <div className="flex justify-end">
-          <a href="#" style={{ fontSize: '0.82rem', color: 'var(--brand)', textDecoration: 'none' }}>Forgot password?</a>
+          <Link to="/forgot-password" style={{ fontSize: '0.82rem', color: 'var(--brand)', textDecoration: 'none' }}>Forgot password?</Link>
         </div>
         <Button type="submit" size="lg" loading={loading} className="w-full mt-2">
           Sign In <ArrowRight size={16} />
@@ -260,6 +260,169 @@ export function RegisterPage() {
           </p>
         </>
       )}
+    </AuthLayout>
+  )
+}
+
+export function ForgotPasswordPage() {
+  const [step, setStep] = useState(1)
+  const [email, setEmail] = useState('')
+  const [otp, setOtp] = useState('')
+  const [passwordForm, setPasswordForm] = useState({ newPassword: '', confirmPassword: '' })
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
+
+  const handleRequestOtp = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    try {
+      await authAPI.forgotPassword({ email: email.trim() })
+      toast.success('If your account exists, a reset OTP has been sent to your email.')
+      setStep(2)
+    } catch (err) {
+      toast.error(err?.message || 'Could not send reset OTP')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    try {
+      await authAPI.verifyForgotPasswordOtp({ email: email.trim(), otp: otp.trim() })
+      toast.success('OTP verified. You can now set a new password.')
+      setStep(3)
+    } catch (err) {
+      toast.error(err?.message || 'OTP verification failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault()
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      toast.error('Passwords do not match')
+      return
+    }
+
+    setLoading(true)
+    try {
+      await authAPI.resetForgotPassword({
+        email: email.trim(),
+        otp: otp.trim(),
+        newPassword: passwordForm.newPassword,
+        confirmPassword: passwordForm.confirmPassword,
+      })
+      toast.success('Password reset successful. Please login with your new password.')
+      navigate('/login')
+    } catch (err) {
+      toast.error(err?.message || 'Failed to reset password')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const resendOtp = async () => {
+    setLoading(true)
+    try {
+      await authAPI.forgotPassword({ email: email.trim() })
+      toast.success('A new reset OTP has been sent')
+    } catch (err) {
+      toast.error(err?.message || 'Could not resend OTP')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <AuthLayout
+      title="Reset password"
+      subtitle="Verify your identity and set a new password"
+      illustration={{
+        heading: 'Secure account recovery',
+        sub: 'We use a one-time code sent to your email to verify your password reset request.',
+        stats: [{ value: 'OTP', label: 'Email Verification' }, { value: '10m', label: 'OTP Validity' }, { value: 'Safe', label: 'Encrypted Reset' }],
+      }}>
+      {step === 1 && (
+        <form onSubmit={handleRequestOtp} className="flex flex-col gap-4">
+          <Input
+            label="Email"
+            type="email"
+            placeholder="you@example.com"
+            icon={<Mail size={16} />}
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+          />
+          <Button type="submit" size="lg" loading={loading} className="w-full mt-1">
+            Send Reset OTP <ArrowRight size={16} />
+          </Button>
+        </form>
+      )}
+
+      {step === 2 && (
+        <>
+          <div className="p-4 rounded-xl mb-4" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+            <p style={{ color: 'var(--text-primary)', fontWeight: 600, fontSize: '0.9rem' }}>Check your inbox</p>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', marginTop: '0.3rem' }}>
+              We sent a 6-digit password reset OTP to {email}.
+            </p>
+          </div>
+          <form onSubmit={handleVerifyOtp} className="flex flex-col gap-4">
+            <Input
+              label="OTP"
+              placeholder="Enter 6-digit OTP"
+              icon={<Shield size={16} />}
+              value={otp}
+              onChange={e => setOtp(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
+              required
+            />
+            <Button type="submit" size="lg" loading={loading} className="w-full mt-1">
+              Verify OTP <ArrowRight size={16} />
+            </Button>
+          </form>
+          <p className="text-center mt-4 text-sm" style={{ color: 'var(--text-muted)' }}>
+            Didn\'t receive OTP?{' '}
+            <button type="button" onClick={resendOtp}
+              style={{ color: 'var(--brand)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>
+              Resend
+            </button>
+          </p>
+        </>
+      )}
+
+      {step === 3 && (
+        <form onSubmit={handleResetPassword} className="flex flex-col gap-4">
+          <Input
+            label="New Password"
+            type="password"
+            placeholder="Enter new password"
+            icon={<Lock size={16} />}
+            value={passwordForm.newPassword}
+            onChange={e => setPasswordForm(f => ({ ...f, newPassword: e.target.value }))}
+            required
+          />
+          <Input
+            label="Confirm Password"
+            type="password"
+            placeholder="Confirm new password"
+            icon={<Lock size={16} />}
+            value={passwordForm.confirmPassword}
+            onChange={e => setPasswordForm(f => ({ ...f, confirmPassword: e.target.value }))}
+            required
+          />
+          <Button type="submit" size="lg" loading={loading} className="w-full mt-1">
+            Reset Password <ArrowRight size={16} />
+          </Button>
+        </form>
+      )}
+
+      <p className="text-center mt-6 text-sm" style={{ color: 'var(--text-muted)' }}>
+        Back to{' '}
+        <Link to="/login" style={{ color: 'var(--brand)', fontWeight: 600, textDecoration: 'none' }}>Sign in</Link>
+      </p>
     </AuthLayout>
   )
 }

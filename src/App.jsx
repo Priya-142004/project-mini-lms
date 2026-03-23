@@ -8,7 +8,7 @@ import Footer from './components/layout/Footer'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 
 import HomePage from './pages/HomePage'
-import { LoginPage, RegisterPage } from './pages/AuthPages'
+import { LoginPage, RegisterPage, ForgotPasswordPage } from './pages/AuthPages'
 import CoursesPage from './pages/CoursesPage'
 import CourseDetailPage from './pages/CourseDetailPage'
 import DashboardPage from './pages/DashboardPage'
@@ -23,8 +23,8 @@ import LeaderboardPage from './pages/LeaderboardPage'
 import { PaymentPage, PaymentHistoryPage } from './pages/PaymentPages'
 import BadgesPage from './pages/BadgesPage'
 
-const NO_FOOTER_ROUTES = ['/learn/', '/login', '/register']
-const NO_NAVBAR_ROUTES = ['/learn/', '/login', '/register']
+const NO_FOOTER_ROUTES = ['/learn/', '/login', '/register', '/forgot-password']
+const NO_NAVBAR_ROUTES = ['/learn/', '/login', '/register', '/forgot-password']
 
 function NotFoundPage() {
   return (
@@ -52,6 +52,7 @@ function AppContent() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/courses" element={<CoursesPage />} />
           <Route path="/courses/:id" element={<CourseDetailPage />} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
