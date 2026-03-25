@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/courses", "/api/v1/courses/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/courses/{id}/lessons").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/courses/{id}/reviews").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/courses/{id}/reviews/average").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/engagement/leaderboard").permitAll()
@@ -59,7 +60,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(frontendUrl, "http://localhost:3000", "http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of(frontendUrl, "https://letslearn-lms.vercel.app", "http://localhost:3000", "http://localhost:5173"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "Origin", "X-Requested-With"));
         configuration.setExposedHeaders(List.of("Authorization"));
