@@ -7,6 +7,7 @@ import toast from 'react-hot-toast'
 
 export default function ProfilePage() {
   const { user, updateUser } = useAuthStore()
+  const profileImage = user?.profilePicUrl || user?.profilePic || null
   const [form, setForm] = useState({
     fullName: user?.fullName || '',
     bio: user?.bio || '',
@@ -18,10 +19,11 @@ export default function ProfilePage() {
     e.preventDefault()
     setSaving(true)
     try {
-      let payload = { ...form }
+      const payload = { ...form }
       if (profileFile) {
         const uploadRes = await userAPI.uploadProfilePicture(profileFile)
-        payload.profilePicUrl = uploadRes?.data
+        const uploadedUrl = uploadRes?.data
+        updateUser({ profilePicUrl: uploadedUrl, profilePic: uploadedUrl })
       }
       const res = await userAPI.updateMe(payload)
       updateUser(res?.data)
@@ -52,8 +54,8 @@ export default function ProfilePage() {
           <div className="relative">
             <div className="w-24 h-24 rounded-2xl border-4 overflow-hidden flex items-center justify-center"
               style={{ borderColor: 'var(--bg-primary)', background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}>
-              {user?.profilePicUrl
-                ? <img src={user.profilePicUrl} alt="" className="w-full h-full object-cover" />
+              {profileImage
+                ? <img src={profileImage} alt="" className="w-full h-full object-cover" />
                 : <span style={{ fontFamily: 'Sora, sans-serif', fontWeight: 800, fontSize: '2rem', color: 'white' }}>
                     {user?.fullName?.[0]?.toUpperCase()}
                   </span>

@@ -8,6 +8,7 @@ import { notificationAPI } from '../../api'
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuthStore()
+  const userAvatar = user?.profilePicUrl || user?.profilePic || null
   const navigate = useNavigate()
   const location = useLocation()
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -146,7 +147,7 @@ export default function Navbar() {
                 <button onClick={() => { setProfileOpen(o => !o); setNotifOpen(false) }}
                   className="flex items-center gap-2 px-3 py-2 rounded-xl transition-all hover:scale-105"
                   style={{ background: 'var(--bg-tertiary)', border: '1.5px solid var(--border)' }}>
-                  <Avatar name={user?.fullName} size="sm" />
+                  <Avatar name={user?.fullName} src={userAvatar} size="sm" />
                   <span className="text-sm font-semibold hidden md:block" style={{ fontFamily: 'Sora, sans-serif', color: 'var(--text-primary)', maxWidth: '90px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {user?.fullName?.split(' ')[0]}
                   </span>

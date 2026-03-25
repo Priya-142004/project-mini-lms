@@ -1,15 +1,25 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
+const normalizeUser = (user) => {
+  if (!user) return user
+  const imageUrl = user.profilePicUrl || user.profilePic || null
+  return {
+    ...user,
+    profilePicUrl: imageUrl,
+    profilePic: imageUrl,
+  }
+}
+
 export const useAuthStore = create(
   persist(
     (set) => ({
       user: null,
       token: null,
       isAuthenticated: false,
-      login: (user, token) => set({ user, token, isAuthenticated: true }),
+      login: (user, token) => set({ user: normalizeUser(user), token, isAuthenticated: true }),
       logout: () => set({ user: null, token: null, isAuthenticated: false }),
-      updateUser: (user) => set((state) => ({ user: { ...state.user, ...user } })),
+      updateUser: (user) => set((state) => ({ user: normalizeUser({ ...state.user, ...user }) })),
     }),
     {
       name: 'lms-auth',
